@@ -1,4 +1,3 @@
 # EAD-TTMS
-Enterprise Application Development Final Project
 
-Record all your dcoumentation here
+IDS 517: Enterprise Application Development
