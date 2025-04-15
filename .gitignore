@@ -1,0 +1,15 @@
+# Ignore environment variables
+.env
+
+# Ignore node_modules
+node_modules/
+
+# Ignore logs
+*.log
+
+# Ignore debug files
+*.tmp
+
+# Ignore local test scripts
+backend/test-env.js
+backend/test-connection.js

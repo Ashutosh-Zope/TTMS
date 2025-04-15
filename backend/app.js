@@ -14,3 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/users", userRoutes);
 
 module.exports = app;
+
+const ticketRoutes = require('./routes/ticketRoutes');
+app.use('/api/tickets', ticketRoutes);

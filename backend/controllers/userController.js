@@ -1,68 +1,80 @@
 // backend/controllers/userController.js
-const User = require("../models/User");
+const dynamoDB = require('../config/dynamo');
 
-// @desc   Register new user
-// @route  POST /api/users/signup
-// @access Public
+const TABLE_NAME = 'TicketSystem-Users';
+
+// Register new user
 exports.registerUser = async (req, res) => {
-  try {
-    const { name, email, password, phone } = req.body;
+  const { name, email, password, phone } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+  const getParams = {
+    TableName: TABLE_NAME,
+    Key: { email }
+  };
+
+  const putParams = {
+    TableName: TABLE_NAME,
+    Item: { email, name, password, phone, createdAt: new Date().toISOString() }
+  };
+
+  try {
+    const existingUser = await dynamoDB.get(getParams).promise();
+
+    if (existingUser.Item) {
+      return res.status(400).json({ message: 'User already exists' });
     }
 
-    const newUser = await User.create({ name, email, password, phone });
-    res.status(201).json({
-      message: "User created successfully",
-      userId: newUser._id,
-    });
+    await dynamoDB.put(putParams).promise();
+    res.status(201).json({ message: 'User registered successfully', userId: email });
+
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
-// @desc   Login user
-// @route  POST /api/users/login
-// @access Public
+// Login user
 exports.loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    // Find user by email
-    const user = await User.findOne({ email });
+  const getParams = {
+    TableName: TABLE_NAME,
+    Key: { email }
+  };
+
+  try {
+    const result = await dynamoDB.get(getParams).promise();
+    const user = result.Item;
+
     if (!user || user.password !== password) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // If valid, respond
-    res.status(200).json({ message: "Login successful", userId: user._id });
+    res.status(200).json({ message: 'Login successful', userId: user.email });
+
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
-// @desc   Forgot password
-// @route  POST /api/users/forgot-password
-// @access Public
+// Forgot password
 exports.forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
+  const { email } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "No user found with that email" });
+  const getParams = {
+    TableName: TABLE_NAME,
+    Key: { email }
+  };
+
+  try {
+    const result = await dynamoDB.get(getParams).promise();
+
+    if (!result.Item) {
+      return res.status(400).json({ message: 'No user found with that email' });
     }
 
-    // Placeholder for sending reset link or process
-    // e.g., generate token, email user a password reset link, etc.
+    res.status(200).json({ message: 'Password reset instructions sent (placeholder)' });
 
-    res.status(200).json({
-      message: "Password reset instructions sent (placeholder)",
-    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
