@@ -1,5 +1,6 @@
-/* frontend/my-app/src/App.css */
+/* App.css */
 
+/* ─── Global & Body ─────────────────────────────────────── */
 body {
   margin: 0;
   padding: 0;
@@ -9,9 +10,78 @@ body {
 
 .app-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+/* ─── Nav Bar ───────────────────────────────────────────── */
+.nav-bar {
+  width: 100%;
+  background: #007bff;
+  padding: 0.5rem 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+}
+
+.nav-button {
+  background: #fff;
+  color: #007bff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  background: #e6e6e6;
+}
+
+/* ─── Dashboard Styles ─────────────────────────────────── */
+.dashboard-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-create-button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dashboard-create-button:hover {
+  background: #0056b3;
+}
+
+.ticket-list .ticket-card {
+  background: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Form Styles ──────────────────────────────────────── */
+h2 {
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .form-container {
@@ -20,11 +90,7 @@ body {
   border-radius: 8px;
   width: 300px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-  margin-bottom: 1rem;
-  text-align: center;
+  margin: 2rem auto;
 }
 
 .form-group {
@@ -33,18 +99,24 @@ h2 {
 
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
   font-weight: bold;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"],
-input[type="tel"] {
+input[type="tel"],
+select,
+textarea {
   width: 100%;
   padding: 8px;
-  margin-bottom: 0.2rem;
   box-sizing: border-box;
+  margin-bottom: 0.3rem;
+}
+
+textarea {
+  resize: vertical;
 }
 
 button {
@@ -73,10 +145,10 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Responsive */
+/* ─── Responsive ───────────────────────────────────────── */
 @media (max-width: 400px) {
   .form-container {
     width: 90%;
-    margin: 0 auto;
+    margin: 1rem auto;
   }
 }

@@ -1,24 +1,25 @@
-// frontend/my-app/src/components/Login.jsx
+// src/components/Login.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
+
       if (response.ok) {
-        alert(`Login successful: ${data.message}`);
-        // Possibly redirect to a dashboard or home page
+        localStorage.setItem("userEmail", data.userId);
+        navigate("/dashboard");
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -42,7 +43,6 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-
         <div className="form-group">
           <label>Password</label>
           <input
@@ -53,7 +53,6 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-
         <button type="submit">Log In</button>
       </form>
       <a href="/signup">Create an account</a> |{" "}

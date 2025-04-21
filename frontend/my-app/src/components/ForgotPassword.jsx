@@ -1,4 +1,4 @@
-// frontend/my-app/src/components/ForgotPassword.jsx
+// src/components/ForgotPassword.jsx
 import React, { useState } from "react";
 
 const ForgotPassword = () => {
@@ -11,9 +11,7 @@ const ForgotPassword = () => {
         "http://localhost:5000/api/users/forgot-password",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
         }
       );
@@ -43,7 +41,6 @@ const ForgotPassword = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-
         <button type="submit">Reset Password</button>
       </form>
       <a href="/">Back to Login</a>

@@ -1,27 +1,26 @@
-// frontend/my-app/src/components/SignUp.jsx
+// src/components/SignUp.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch("http://localhost:5000/api/users/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, phone }),
       });
       const data = await response.json();
       if (response.ok) {
         alert(data.message);
-        // Possibly redirect to the login page
-        window.location.href = "/";
+        navigate("/");
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -45,7 +44,6 @@ const SignUp = () => {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-
         <div className="form-group">
           <label>Email</label>
           <input
@@ -56,7 +54,6 @@ const SignUp = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-
         <div className="form-group">
           <label>Password</label>
           <input
@@ -67,7 +64,6 @@ const SignUp = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-
         <div className="form-group">
           <label>Phone</label>
           <input
@@ -78,7 +74,6 @@ const SignUp = () => {
             onChange={(e) => setPhone(e.target.value)}
           />
         </div>
-
         <button type="submit">Create Account</button>
       </form>
       <a href="/">Already have an account? Log In</a>
