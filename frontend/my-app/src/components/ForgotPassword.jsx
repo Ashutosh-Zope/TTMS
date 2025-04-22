@@ -1,5 +1,6 @@
-// src/components/ForgotPassword.jsx
 import React, { useState } from "react";
+
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001/api";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -7,14 +8,11 @@ const ForgotPassword = () => {
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/users/forgot-password",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const response = await fetch(`${API_BASE}/users/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
       const data = await response.json();
       if (response.ok) {
         alert(data.message);
@@ -22,7 +20,7 @@ const ForgotPassword = () => {
         alert(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Forgot-password fetch failed:", error);
       alert("An error occurred while resetting password.");
     }
   };
@@ -43,7 +41,9 @@ const ForgotPassword = () => {
         </div>
         <button type="submit">Reset Password</button>
       </form>
-      <a href="/">Back to Login</a>
+      <div className="form-footer">
+        <a href="/">Back to Login</a>
+      </div>
     </div>
   );
 };

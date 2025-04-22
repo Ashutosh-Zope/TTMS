@@ -1,109 +1,215 @@
-// frontend/my-app/src/components/CreateTicket.jsx
-import React, { useState } from "react";
+// src/components/CreateTicket.jsx
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const CreateTicket = () => {
+const API_BASE = "http://localhost:5001/api"; // <-- match your backend port
+
+export default function CreateTicket() {
+  const navigate = useNavigate();
+  const userEmail = localStorage.getItem("userEmail");
   const [subject, setSubject] = useState("");
-  const [severity, setSeverity] = useState("low");
-  const [department, setDepartment] = useState("support");
   const [description, setDescription] = useState("");
-  const [file, setFile] = useState(null);
+  const [priority, setPriority] = useState("medium");
+  const [status, setStatus] = useState("open");
+  const [tickets, setTickets] = useState([]);
+
+  // Load existing tickets
+  useEffect(() => {
+    if (!userEmail) return navigate("/");
+    fetch(`${API_BASE}/tickets/${userEmail}`)
+      .then((r) => r.json())
+      .then(setTickets)
+      .catch((err) => console.error("Fetch tickets failed:", err));
+  }, [userEmail, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // prepare form data
-    const formData = new FormData();
-    formData.append("subject", subject);
-    formData.append("severity", severity);
-    formData.append("department", department);
-    formData.append("description", description);
-    if (file) formData.append("attachment", file);
+    const payload = {
+      title: subject,
+      description,
+      priority,
+      status,
+      userEmail,
+    };
 
     try {
-      const res = await fetch("http://localhost:5001/api/tickets", {
+      const res = await fetch(`${API_BASE}/tickets`, {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-      const data = await res.json();
 
-      if (res.ok) {
-        alert(`Ticket created: ${data.ticketId}`);
-        // reset form
-        setSubject("");
-        setSeverity("low");
-        setDepartment("support");
-        setDescription("");
-        setFile(null);
-      } else {
-        alert(`Error: ${data.message}`);
+      console.log("Create response status:", res.status, res.statusText);
+      const data = await res.json();
+      console.log("Create response body:", data);
+
+      if (!res.ok) {
+        // server responded but with an error code
+        alert(`Error creating ticket: ${data.message || res.statusText}`);
+        return;
       }
+
+      // success: add to list
+      setTickets((prev) => [
+        {
+          ticketId: data.ticketId,
+          title: subject,
+          description,
+          priority,
+          status,
+        },
+        ...prev,
+      ]);
+      // clear form
+      setSubject("");
+      setDescription("");
+      setPriority("medium");
+      setStatus("open");
     } catch (err) {
-      console.error(err);
-      alert("An error occurred creating the ticket.");
+      // network error or JSON parse error
+      console.error("Network or parsing error:", err);
+      alert("Network error: could not create ticket.");
     }
   };
 
   return (
-    <div className="form-container">
-      <h2>Create New Ticket</h2>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div className="form-group">
-          <label>Ticket Subject</label>
-          <input
-            type="text"
-            placeholder="Enter subject"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            required
-          />
+    <div className="dashboard-container">
+      <aside className="sidebar">
+        <button className="hamburger">☰</button>
+        <nav>
+          <ul>
+            <li onClick={() => navigate("/dashboard")}>← Back to Dashboard</li>
+            <li
+              onClick={() => {
+                localStorage.removeItem("userEmail");
+                navigate("/");
+              }}
+            >
+              Log Out ↗
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <div className="separator" />
+
+      <div className="main">
+        <div className="form-container">
+          <h2>Create Ticket</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Ticket Subject</label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Ticket Description</label>
+              <textarea
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Priority</label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                required
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Status</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                required
+              >
+                <option value="open">Open</option>
+                <option value="in progress">In Progress</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+
+            <button type="submit">Submit Ticket</button>
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              style={{
+                marginTop: "1rem",
+                background: "#cccccc",
+                color: "#333",
+                width: "100%",
+              }}
+            >
+              Cancel
+            </button>
+          </form>
         </div>
 
-        <div className="form-group">
-          <label>Ticket Severity</label>
-          <select
-            value={severity}
-            onChange={(e) => setSeverity(e.target.value)}
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
-          </select>
+        <div className="content-card">
+          <h2>Your Tickets</h2>
+          <div className="table-wrapper">
+            <table className="tickets-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Subject</th>
+                  <th>Description</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tickets.length ? (
+                  tickets.map((t) => (
+                    <tr key={t.ticketId}>
+                      <td>{t.ticketId}</td>
+                      <td>{t.title}</td>
+                      <td>{t.description}</td>
+                      <td>{t.priority}</td>
+                      <td>{t.status}</td>
+                      <td>
+                        <button
+                          className="edit-btn"
+                          onClick={() =>
+                            navigate(`/edit-ticket/${t.ticketId}`, { state: t })
+                          }
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      style={{ textAlign: "center", padding: "1rem" }}
+                    >
+                      No tickets yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-
-        <div className="form-group">
-          <label>Target Department</label>
-          <select
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-          >
-            <option value="support">Support</option>
-            <option value="engineering">Engineering</option>
-            <option value="sales">Sales</option>
-            <option value="hr">Human Resources</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Description (brief)</label>
-          <textarea
-            placeholder="Enter a brief description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Attach File</label>
-          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        </div>
-
-        <button type="submit">Submit Ticket</button>
-      </form>
+      </div>
     </div>
   );
-};
-
-export default CreateTicket;
+}

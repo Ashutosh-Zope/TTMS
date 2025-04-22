@@ -7,7 +7,7 @@ const app = require("./app");
 // Connect Database
 //connectDB();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const server = http.createServer(app);
 
 server.listen(PORT, () => {

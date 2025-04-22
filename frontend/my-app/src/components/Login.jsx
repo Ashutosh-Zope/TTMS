@@ -1,30 +1,29 @@
-// src/components/Login.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
+      const response = await fetch(`${API_BASE}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
-
       if (response.ok) {
+        // store for subsequent pages
         localStorage.setItem("userEmail", data.userId);
-        navigate("/dashboard");
+        window.location.href = "/dashboard";
       } else {
         alert(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Login fetch failed:", error);
       alert("An error occurred during login.");
     }
   };
@@ -55,8 +54,10 @@ const Login = () => {
         </div>
         <button type="submit">Log In</button>
       </form>
-      <a href="/signup">Create an account</a> |{" "}
-      <a href="/forgot-password">Forgot Password?</a>
+      <div className="form-footer">
+        <a href="/signup">Create an account</a>
+        <a href="/forgot-password">Forgot Password?</a>
+      </div>
     </div>
   );
 };

@@ -1,18 +1,17 @@
-// src/components/SignUp.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001/api";
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/users/signup", {
+      const response = await fetch(`${API_BASE}/users/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, phone }),
@@ -20,12 +19,12 @@ const SignUp = () => {
       const data = await response.json();
       if (response.ok) {
         alert(data.message);
-        navigate("/");
+        window.location.href = "/";
       } else {
         alert(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Signup fetch failed:", error);
       alert("An error occurred during sign up.");
     }
   };
@@ -76,7 +75,9 @@ const SignUp = () => {
         </div>
         <button type="submit">Create Account</button>
       </form>
-      <a href="/">Already have an account? Log In</a>
+      <div className="form-footer">
+        <a href="/">Already have an account? Log In</a>
+      </div>
     </div>
   );
 };
