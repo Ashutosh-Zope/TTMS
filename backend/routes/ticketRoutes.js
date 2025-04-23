@@ -3,13 +3,20 @@ const {
   createTicket,
   getTicketsByUser,
   updateTicket,
+  getAllTickets,
   deleteTicket
 } = require('../controllers/ticketController');
 
 const router = express.Router();
 
-router.post('/', createTicket);
+// Public admin route to fetch all tickets
+router.get('/all', getAllTickets);
+
+// Per-user route (must come after `/all`)
 router.get('/:userEmail', getTicketsByUser);
+
+// Create, update, delete
+router.post('/', createTicket);
 router.put('/:ticketId', updateTicket);
 router.delete('/:ticketId', deleteTicket);
 

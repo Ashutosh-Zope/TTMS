@@ -1,10 +1,13 @@
+// src/components/Login.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001/api";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
+  const navigate                = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -12,18 +15,19 @@ const Login = () => {
       const response = await fetch(`${API_BASE}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
       const data = await response.json();
-      if (response.ok) {
-        // store for subsequent pages
-        localStorage.setItem("userEmail", data.userId);
-        window.location.href = "/dashboard";
-      } else {
+      if (!response.ok) {
         alert(`Error: ${data.message}`);
+        return;
       }
-    } catch (error) {
-      console.error("Login fetch failed:", error);
+      localStorage.setItem("userEmail", data.userId);
+      localStorage.setItem("userRole", data.role);
+      if (data.role === "admin") navigate("/admin-dashboard");
+      else                navigate("/dashboard");
+    } catch (err) {
+      console.error("Login failed:", err);
       alert("An error occurred during login.");
     }
   };
@@ -39,7 +43,7 @@ const Login = () => {
             placeholder="Enter Email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
           />
         </div>
         <div className="form-group">
@@ -49,13 +53,14 @@ const Login = () => {
             placeholder="Enter Password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
           />
         </div>
         <button type="submit">Log In</button>
       </form>
+
+      {/* only forgot-password link now */}
       <div className="form-footer">
-        <a href="/signup">Create an account</a>
         <a href="/forgot-password">Forgot Password?</a>
       </div>
     </div>

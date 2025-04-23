@@ -239,6 +239,7 @@ a:hover {
 .separator {
   width: 1px;
   background: var(--border-light);
+
 }
 
 .main {
@@ -280,6 +281,8 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
+  max-width: none; 
 }
 
 .create-ticket-btn {
@@ -334,6 +337,7 @@ a:hover {
     width: 100%;
     border-radius: var(--radius);
     margin-bottom: 1rem;
+    border-right: 1px solid var(--border-light);
   }
   .main {
     padding: 1rem;
@@ -350,5 +354,283 @@ a:hover {
   textarea,
   select {
     font-size: 1rem;
+  }
+}
+/*––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––*/
+/* 6. Sidebar dropdown menu                                       */
+/*––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––*/
+.menu-container {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  padding: 1rem 0;
+}
+
+.hamburger {
+  background: transparent;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 0.6rem 1.2rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--primary);
+  transition: var(--transition);
+}
+
+.hamburger:hover {
+  background: var(--primary-hover);
+  color: #fff;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+  width: 200px;
+  margin-top: 0.5rem;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.dropdown-menu li {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-dark);
+}
+
+.dropdown-menu li:hover {
+  background: var(--bg-light);
+  color: var(--primary);
+}
+
+/* hide the original nav list under the burger */
+.sidebar nav {
+  display: none;
+}
+
+/*––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––*/
+/* 7. Ticket Card Grid & Modal                                    */
+/*––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––*/
+.cards-grid {
+  display: grid;
+  /* exactly three equal columns */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;          /* space between columns/rows */
+  width: 100%;  
+}
+
+.ticket-card {
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.ticket-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+.ticket-card h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+.ticket-card p {
+  margin: 0.25rem 0;
+  color: var(--text-muted);
+}
+
+/* Modal overlay & box */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  position: relative;
+  background: var(--bg-card);
+  padding: 2rem;
+  border-radius: var(--radius);
+  max-width: 480px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+}
+.modal h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+.modal p {
+  margin: 0.5rem 0;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.close-btn:hover {
+  color: var(--text-dark);
+}
+
+/* column headers */
+.cards-grid-header {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  margin: 1.5rem 0 0.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* ticket card styling unchanged */
+.ticket-card {
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+/* priority badge colors */
+.priority-badge.low {
+  color: green;
+}
+.priority-badge.medium {
+  color: goldenrod;
+}
+.priority-badge.high {
+  color: red;
+}
+
+/*––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––*/
+/* Stretch dashboard and cards for more horizontal space         */
+/*––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––*/
+
+/* 1. Allow the app container to grow wider */
+.app-container {
+  max-width: 1600px; /* up from 1200px */
+}
+
+/* 2. Give the main area more side padding */
+.main {
+  padding: 2rem 4rem; /* left/right increased */
+}
+/* 5. Ticket cards – ensure a comfortable height */
+.ticket-card {
+  min-height: 140px;
+}
+
+/* 6. Header row labels sit nicely above columns */
+.cards-grid-header {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin: 2rem 0 1rem;
+  font-size: 1.1rem;
+}
+
+/* 7. Keep your modal centered and padded */
+.modal {
+  max-width: 600px; /* up from 480px */
+  width: 90%;
+  padding: 2.5rem;
+}
+
+/* ------------- */
+/*  auth layout  */
+/* ------------- */
+
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.auth-container .panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.auth-container .login-panel {
+  background: #f9fafb;
+}
+
+.auth-container .signup-panel {
+  background: #fff;
+  position: relative;
+}
+
+/* Title above the sign-up form */
+.signup-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Social-login button placeholders */
+.social-btn {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius);
+  outline: none;
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.social-btn.google {
+  background: #4285f4;
+  color: white;
+}
+.social-btn.linkedin {
+  background: #0a66c2;
+  color: white;
+}
+
+/* Tweak your existing form-container so it fills its panel */
+.panel .form-container {
+  width: 100%;
+  max-width: 400px;   /* or whatever width you want */
+  margin: 0 auto;
+}
+
+/* Make sure the log-in button is full width */
+.panel .form-container button[type="submit"] {
+  width: 100%;
+}
+
+/* On small screens stack vertically */
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column;
+  }
+  .panel {
+    padding: 2rem;
   }
 }
