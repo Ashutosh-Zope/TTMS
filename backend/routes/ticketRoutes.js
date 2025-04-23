@@ -1,23 +1,25 @@
-const express = require('express');
+// backend/routes/ticketRoutes.js
+const express = require("express");
+const multer = require("multer");
 const {
   createTicket,
   getTicketsByUser,
   updateTicket,
   getAllTickets,
-  deleteTicket
-} = require('../controllers/ticketController');
+  deleteTicket,
+} = require("../controllers/ticketController");
 
 const router = express.Router();
+const upload = multer(); // in-memory
 
-// Public admin route to fetch all tickets
-router.get('/all', getAllTickets);
-
-// Per-user route (must come after `/all`)
-router.get('/:userEmail', getTicketsByUser);
-
-// Create, update, delete
-router.post('/', createTicket);
-router.put('/:ticketId', updateTicket);
-router.delete('/:ticketId', deleteTicket);
+router.post(
+  "/",
+  upload.array("attachments", 5),  // up to 5 files under “attachments”
+  createTicket
+);
+router.get("/:userEmail", getTicketsByUser);
+router.get("/all", getAllTickets);
+router.put("/:ticketId", updateTicket);
+router.delete("/:ticketId", deleteTicket);
 
 module.exports = router;
