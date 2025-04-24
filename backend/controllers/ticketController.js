@@ -127,12 +127,17 @@ exports.deleteTicket = async (req, res) => {
 };
 
 exports.getAllTickets = async (req, res) => {
+  // console.log("🛠️ getAllTickets triggered");
+  
   try {
-    const data = await dynamoDB.scan({ TableName: TABLE_NAME }).promise();
+    const params = {
+      TableName: "TicketSystem-Tickets"
+    };
+    const data = await dynamoDB.scan(params).promise();
+    // console.log("🔍 DynamoDB Scan Response:", data);
     return res.status(200).json(data.Items);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Could not fetch all tickets", error: err.message });
+    console.error("❌ Error fetching tickets:", err);
+    return res.status(500).json({ message: "Could not fetch all tickets", error: err.message });
   }
 };

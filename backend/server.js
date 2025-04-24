@@ -1,5 +1,7 @@
 // backend/server.js
-require("dotenv").config(); // load .env variables if any
+//require("dotenv").config(); // load .env variables if any
+require('dotenv').config();
+const AWS = require('aws-sdk');
 const http = require("http");
 const app = require("./app");
 //const connectDB = require("./config/db");
