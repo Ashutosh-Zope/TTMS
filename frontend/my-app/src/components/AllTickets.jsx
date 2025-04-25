@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001/api";
 
 export default function AllTickets() {
@@ -7,29 +7,52 @@ export default function AllTickets() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [modalTicket, setModalTicket] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const email = localStorage.getItem("userEmail");
 
-  // Fetch ALL tickets
   useEffect(() => {
     if (!email) {
       navigate("/");
       return;
     }
+
     fetch(`${API_BASE}/tickets/all`)
       .then((r) => r.json())
-      .then(setTickets)
+      .then((allTickets) => {
+        console.log("Fetched Tickets:", allTickets);
+        if (allTickets.length > 0) {
+          console.log("Sample Ticket:", allTickets[0]);
+        }
+
+        const query = new URLSearchParams(location.search);
+        const statusFilter = query.get("status");
+
+        if (statusFilter === "active") {
+          setTickets(
+            allTickets.filter((t) => {
+              const status = t.status?.toLowerCase();
+              return status === "open" || status === "in progress";
+            })
+          );
+        } else if (statusFilter === "closed") {
+          setTickets(
+            allTickets.filter((t) => t.status?.toLowerCase() === "closed")
+          );
+        } else {
+          setTickets(allTickets);
+        }
+      })
       .catch(console.error);
-  }, [email, navigate]);
+  }, [email, navigate, location.search]);
 
   const handleLogout = () => {
     localStorage.removeItem("userEmail");
     navigate("/");
   };
 
-  // group by priority
-  const low    = tickets.filter((t) => t.priority === "low");
-  const medium = tickets.filter((t) => t.priority === "medium");
-  const high   = tickets.filter((t) => t.priority === "high");
+  const low = tickets.filter((t) => t.priority?.toLowerCase() === "low");
+  const medium = tickets.filter((t) => t.priority?.toLowerCase() === "medium");
+  const high = tickets.filter((t) => t.priority?.toLowerCase() === "high");
 
   return (
     <div className="dashboard-container">
@@ -60,16 +83,14 @@ export default function AllTickets() {
         </div>
       </aside>
 
-      <div className="separator"/>
+      <div className="separator" />
 
       {/* Main content */}
       <div className="main">
-        {/* Header */}
         <div className="header-card">
           <h1>All Tickets</h1>
         </div>
 
-        {/* Cards grid */}
         <div className="content-card">
           <div className="cards-grid-header">
             <div>Low</div>
@@ -126,6 +147,7 @@ export default function AllTickets() {
                 </div>
               ))}
             </div>
+
             {tickets.length === 0 && (
               <p style={{ gridColumn: "1 / -1", textAlign: "center" }}>
                 No tickets yet.
@@ -135,7 +157,7 @@ export default function AllTickets() {
         </div>
       </div>
 
-      {/* Modal Popup */}
+      {/* Modal */}
       {modalTicket && (
         <div className="modal-overlay" onClick={() => setModalTicket(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>

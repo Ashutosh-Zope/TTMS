@@ -14,9 +14,13 @@ export default function ViewUsers() {
       navigate("/");
       return;
     }
-    fetch(`${API_BASE}/users`)
+
+    fetch(`${API_BASE}/users/users`)  // ✅ Fixed endpoint path
       .then((r) => r.json())
-      .then(setUsers)
+      .then((data) => {
+        console.log("👥 Fetched Users:", data);
+        setUsers(data);
+      })
       .catch(console.error);
   }, [email, navigate]);
 
@@ -35,7 +39,7 @@ export default function ViewUsers() {
       alert(`Error: ${data.message}`);
     } else {
       alert(data.message);
-      setUsers((u) => u.filter((x) => x.userId !== userEmail));
+      setUsers((u) => u.filter((x) => x.email !== userEmail));
     }
   };
 
@@ -89,15 +93,15 @@ export default function ViewUsers() {
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.userId}>
-                    <td>{u.userId}</td>
+                  <tr key={u.email}>
+                    <td>{u.email}</td>
                     <td>{u.name}</td>
                     <td>{u.phone}</td>
                     <td>{new Date(u.createdAt).toLocaleString()}</td>
                     <td>
                       <button
                         className="edit-btn"
-                        onClick={() => promote(u.userId)}
+                        onClick={() => promote(u.email)}
                       >
                         Promote to Admin
                       </button>
