@@ -6,6 +6,7 @@ const {
   forgotPassword,
   getAllUsers,
   promoteUser,
+  deleteUser
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.post("/forgot-password", forgotPassword);
 // admin APIs
 router.get("/users", getAllUsers);
 router.post("/promote/:email", promoteUser);
+router.delete("/users/:email", deleteUser);
 
 module.exports = router;
