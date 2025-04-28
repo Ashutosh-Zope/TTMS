@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import Sidebar from "./Sidebar"; // ← your new sidebar import
 
 const EditTicket = () => {
   const { ticketId } = useParams();
@@ -7,7 +8,6 @@ const EditTicket = () => {
   const navigate = useNavigate();
   const email = localStorage.getItem("userEmail");
 
-  // get initial values either from state or from server
   const init = location.state || {};
   const [subject, setSubject] = useState(init.title || "");
   const [description, setDescription] = useState(init.description || "");
@@ -51,77 +51,83 @@ const EditTicket = () => {
         return;
       }
       alert("Ticket updated!");
-      navigate("/dashboard");
+      navigate("/all-tickets");
     } catch (err) {
       console.error(err);
       alert("Could not update ticket");
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("userEmail");
+    navigate("/");
+  };
+
   return (
-    <div className="form-container">
-      <h2>Edit Ticket</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Ticket Subject</label>
-          <input
-            type="text"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            required
-          />
-        </div>
+    <div style={{ display: "flex" }}>
+      {/* Sidebar */}
+      <Sidebar onLogout={handleLogout} isAdmin={true} />
 
-        <div className="form-group">
-          <label>Ticket Description</label>
-          <textarea
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </div>
+      {/* Main content */}
+      <div style={{ marginLeft: "80px", padding: "2rem", width: "100%" }}>
+        <h2>Edit Ticket</h2>
+        <form onSubmit={handleSubmit} className="edit-form">
+          <div className="form-group">
+            <label>Ticket Subject</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              required
+            />
+          </div>
 
-        <div className="form-group">
-          <label>Priority</label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            required
+          <div className="form-group">
+            <label>Ticket Description</label>
+            <textarea
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Priority</label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              required
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              required
+            >
+              <option value="open">Open</option>
+              <option value="in progress">In Progress</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+
+          <button type="submit" className="update-btn">Update Ticket</button>
+          <button
+            type="button"
+            onClick={() => navigate("/all-tickets")}
+            className="cancel-btn"
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Status</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            required
-          >
-            <option value="open">Open</option>
-            <option value="in progress">In Progress</option>
-            <option value="closed">Closed</option>
-          </select>
-        </div>
-
-        <button type="submit">Update Ticket</button>
-        <button
-          type="button"
-          onClick={() => navigate("/dashboard")}
-          style={{
-            marginTop: "1rem",
-            background: "#ccc",
-            color: "#333",
-            width: "100%",
-          }}
-        >
-          Cancel
-        </button>
-      </form>
+            Cancel
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
