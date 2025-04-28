@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import Sidebar from "./Sidebar"; // ← your new sidebar import
+import Sidebar from "./Sidebar";
 
 const EditTicket = () => {
   const { ticketId } = useParams();
@@ -51,7 +51,14 @@ const EditTicket = () => {
         return;
       }
       alert("Ticket updated!");
-      navigate("/all-tickets");
+
+      // ✅ Smart redirect based on user role
+      const role = localStorage.getItem("userRole");
+      if (role === "admin") {
+        navigate("/all-tickets"); // Admin dashboard
+      } else {
+        navigate("/dashboard"); // User dashboard
+      }
     } catch (err) {
       console.error(err);
       alert("Could not update ticket");
@@ -60,6 +67,7 @@ const EditTicket = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole"); // ✅ Clear role too
     navigate("/");
   };
 
@@ -121,7 +129,14 @@ const EditTicket = () => {
           <button type="submit" className="update-btn">Update Ticket</button>
           <button
             type="button"
-            onClick={() => navigate("/all-tickets")}
+            onClick={() => {
+              const role = localStorage.getItem("userRole");
+              if (role === "admin") {
+                navigate("/all-tickets");
+              } else {
+                navigate("/dashboard");
+              }
+            }}
             className="cancel-btn"
           >
             Cancel

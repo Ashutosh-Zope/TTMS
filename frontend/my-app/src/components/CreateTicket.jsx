@@ -25,7 +25,7 @@ export default function CreateTicket() {
       description,
       priority,
       status,
-      email: localStorage.getItem("userEmail"),   // attach user email
+      userEmail: localStorage.getItem("userEmail"),   // attach user email
       createdAt: new Date().toISOString()
     };
 

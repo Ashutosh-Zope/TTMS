@@ -89,11 +89,18 @@ export default function AllTickets() {
     if (sortConfig.direction === "desc") return " ▼";
   };
 
+  const handleLogout = () => {
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userRole");
+  navigate("/");
+  };
+
   return (
     <div style={styles.pageWrapper}>
       {/* Sidebar */}
       <div style={styles.sidebar}>
-        <Sidebar />
+        <Sidebar onLogout={handleLogout} isAdmin={true} />
+
       </div>
 
       {/* Main Content */}
