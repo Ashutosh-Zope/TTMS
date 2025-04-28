@@ -19,6 +19,6 @@ router.post("/forgot-password", forgotPassword);
 // admin APIs
 router.get("/users", getAllUsers);
 router.post("/promote/:email", promoteUser);
-router.delete("/users/:email", deleteUser);
+router.delete("/:email", deleteUser);
 
 module.exports = router;
