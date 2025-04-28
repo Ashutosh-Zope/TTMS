@@ -49,6 +49,25 @@ export default function ViewUsers() {
     }
   };
 
+  const deleteUser = async (userEmail) => {
+    if (!window.confirm(`Are you sure you want to delete ${userEmail}?`)) return;
+    try {
+      const res = await fetch(`${API_BASE}/users/${encodeURIComponent(userEmail)}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(`Error: ${data.message}`);
+      } else {
+        toast.success(data.message);
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error("Delete user error:", error);
+      toast.error("Failed to delete user. Try again.");
+    }
+  };
+
   // Pagination logic
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -63,18 +82,14 @@ export default function ViewUsers() {
 
   return (
     <div style={pageWrapperStyle}>
-      {/* Sidebar */}
       <div style={sidebarWrapperStyle}>
         <Sidebar />
       </div>
 
-      {/* Main content */}
       <div style={contentWrapperStyle}>
         <div style={cardStyle}>
-          {/* Header */}
           <h1 style={titleStyle}>View Users</h1>
 
-          {/* Table */}
           <div style={{ overflowX: "auto" }}>
             <table style={tableStyle}>
               <thead style={theadStyle}>
@@ -86,21 +101,28 @@ export default function ViewUsers() {
                 </tr>
               </thead>
               <tbody>
-                {currentUsers.map((u) => (
-                  <tr key={u.email}>
-                    <td style={tdStyle}>{u.name}</td>
-                    <td style={tdStyle}>{u.phone}</td>
-                    <td style={tdStyle}>
-                      {u.createdAt ? new Date(u.createdAt).toLocaleString() : "Invalid Date"}
-                    </td>
-                    <td style={{ ...tdStyle, textAlign: "center" }}>
-                      <button style={promoteButtonStyle} onClick={() => promoteUser(u.email)}>
-                        Promote
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {currentUsers.length === 0 && (
+                {currentUsers.length > 0 ? (
+                  currentUsers.map((u) => (
+                    <tr key={u.email}>
+                      <td style={tdStyle}>{u.name}</td>
+                      <td style={tdStyle}>{u.phone}</td>
+                      <td style={tdStyle}>
+                        {u.createdAt ? new Date(u.createdAt).toLocaleString() : "Invalid Date"}
+                      </td>
+                      <td style={{ ...tdStyle, textAlign: "center" }}>
+                        <button style={promoteButtonStyle} onClick={() => promoteUser(u.email)}>
+                          Promote
+                        </button>
+                        <button
+                          style={{ ...promoteButtonStyle, backgroundColor: "#dc3545", marginLeft: "10px" }}
+                          onClick={() => deleteUser(u.email)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
                   <tr>
                     <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
                       No users found.
@@ -129,7 +151,6 @@ export default function ViewUsers() {
               </button>
             ))}
           </div>
-
         </div>
       </div>
 
@@ -137,108 +158,17 @@ export default function ViewUsers() {
     </div>
   );
 }
-const pageWrapperStyle = {
-  minHeight: "100vh",
-  width: "100vw",
-  background: "linear-gradient(to right, #d7f0f7, #c2e9f5)",
-  display: "flex",
-  margin: "0",
-  padding: "0",
-};
 
-const sidebarWrapperStyle = {
-  width: "300px",
-  background: "white",
-  minHeight: "100vh",
-  boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
-  position: "fixed",
-  top: 0,
-  left: 0,
-};
-
-const contentWrapperStyle = {
-  marginLeft: "300px",
-  flex: 1,
-  padding: "50px",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "flex-start",
-};
-
-const cardStyle = {
-  width: "100%",
-  maxWidth: "1500px",
-  background: "#fff",
-  borderRadius: "10px",
-  padding: "25px",
-  boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
-  height:"100%"
-};
-
-const titleStyle = {
-  textAlign: "center",
-  marginBottom: "20px",
-  fontSize: "26px",
-  fontWeight: "bold",
-  color: "#333",
-};
-
-const tableStyle = {
-  width: "100%",
-  borderCollapse: "collapse",
-  overflowX: "auto",
-};
-
-const theadStyle = {
-  backgroundColor: "#f2f2f2",
-};
-
-const thStyle = {
-  padding: "10px 12px",
-  borderBottom: "2px solid #ddd",
-  textAlign: "left",
-  fontWeight: "bold",
-  fontSize: "15px",
-};
-
-const tdStyle = {
-  padding: "10px 12px",
-  borderBottom: "1px solid #eee",
-  fontSize: "14px",
-};
-
-const promoteButtonStyle = {
-  backgroundColor: "#007bff",
-  color: "white",
-  border: "none",
-  padding: "8px 16px",
-  borderRadius: "6px",
-  cursor: "pointer",
-  transition: "background-color 0.3s",
-};
-
-const paginationWrapperStyle = {
-  marginTop: "30px",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  flexWrap: "wrap",
-  gap: "10px",
-  flexDirection: "row",
-};
-
-const pageButtonStyle = {
-  width: "40px",
-  height: "40px",
-  borderRadius: "16px",
-  border: "2px solid #3b4cca",
-  backgroundColor: "white",
-  color: "#3b4cca",
-  fontWeight: "bold",
-  fontSize: "16px",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  cursor: "pointer",
-  transition: "0.3s all ease",
-};
+// Styles (same you already had)
+const pageWrapperStyle = { minHeight: "100vh", width: "100vw", background: "linear-gradient(to right, #d7f0f7, #c2e9f5)", display: "flex", margin: "0", padding: "0" };
+const sidebarWrapperStyle = { width: "300px", background: "white", minHeight: "100vh", boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)", position: "fixed", top: 0, left: 0 };
+const contentWrapperStyle = { marginLeft: "300px", flex: 1, padding: "50px", display: "flex", justifyContent: "center", alignItems: "flex-start" };
+const cardStyle = { width: "100%", maxWidth: "1500px", background: "#fff", borderRadius: "10px", padding: "25px", boxShadow: "0px 5px 15px rgba(0,0,0,0.2)", height: "100%" };
+const titleStyle = { textAlign: "center", marginBottom: "20px", fontSize: "26px", fontWeight: "bold", color: "#333" };
+const tableStyle = { width: "100%", borderCollapse: "collapse", overflowX: "auto" };
+const theadStyle = { backgroundColor: "#f2f2f2" };
+const thStyle = { padding: "10px 12px", borderBottom: "2px solid #ddd", textAlign: "left", fontWeight: "bold", fontSize: "15px" };
+const tdStyle = { padding: "10px 12px", borderBottom: "1px solid #eee", fontSize: "14px" };
+const promoteButtonStyle = { backgroundColor: "#007bff", color: "white", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer", transition: "background-color 0.3s" };
+const paginationWrapperStyle = { marginTop: "30px", display: "flex", justifyContent: "center", alignItems: "center", flexWrap: "wrap", gap: "10px", flexDirection: "row" };
+const pageButtonStyle = { width: "40px", height: "40px", borderRadius: "16px", border: "2px solid #3b4cca", backgroundColor: "white", color: "#3b4cca", fontWeight: "bold", fontSize: "16px", display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer", transition: "0.3s all ease" };

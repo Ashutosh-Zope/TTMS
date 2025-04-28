@@ -18,32 +18,36 @@ export default function CreateTicket() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("priority", priority);
-      formData.append("status", status);
-      attachments.forEach((file) => {
-        formData.append("attachments", file);
-      });
+  e.preventDefault();
+  try {
+    const ticketData = {
+      title,
+      description,
+      priority,
+      status,
+      email: localStorage.getItem("userEmail"),   // attach user email
+      createdAt: new Date().toISOString()
+    };
 
-      const res = await fetch(`${API_BASE}/tickets`, {
-        method: "POST",
-        body: formData,               // browser sets multipart/form-data
-      });
+    const res = await fetch(`${API_BASE}/tickets`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(ticketData)
+    });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Could not create ticket");
-      }
-      navigate("/dashboard");
-    } catch (err) {
-      console.error(err);
-      alert(`Error: ${err.message}`);
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Could not create ticket");
     }
-  };
+    navigate("/dashboard");
+  } catch (err) {
+    console.error(err);
+    alert(`Error: ${err.message}`);
+  }
+};
+
 
   return (
     <div className="form-container">

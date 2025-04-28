@@ -144,3 +144,30 @@ exports.promoteUser = async (req, res) => {
     res.status(500).json({ message: "Promotion failed", error: err.message });
   }
 };
+
+// Delete a user
+exports.deleteUser = async (req, res) => {
+  try {
+    const decodedEmail = decodeURIComponent(req.params.email);
+    
+    const { Item: user } = await dynamoDB
+      .get({ TableName: USERS_TBL, Key: { userId: decodedEmail } })
+      .promise();
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await dynamoDB
+      .delete({ TableName: USERS_TBL, Key: { userId: decodedEmail } })
+      .promise();
+
+    res.status(200).json({ message: `User ${decodedEmail} deleted successfully.` });
+  } catch (err) {
+    console.error("deleteUser error:", err);
+    res.status(500).json({ message: "Deletion failed", error: err.message });
+  }
+};
+
+
+
