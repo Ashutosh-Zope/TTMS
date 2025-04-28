@@ -68,6 +68,12 @@ export default function ViewUsers() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+    navigate("/");
+  };
+
   // Pagination logic
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -82,10 +88,12 @@ export default function ViewUsers() {
 
   return (
     <div style={pageWrapperStyle}>
+      {/* Sidebar with logout! */}
       <div style={sidebarWrapperStyle}>
-        <Sidebar />
+        <Sidebar onLogout={handleLogout} isAdmin={true} />
       </div>
 
+      {/* Main content */}
       <div style={contentWrapperStyle}>
         <div style={cardStyle}>
           <h1 style={titleStyle}>View Users</h1>
@@ -158,6 +166,9 @@ export default function ViewUsers() {
     </div>
   );
 }
+
+// Same styles as before (no change)
+
 
 // Styles (same you already had)
 const pageWrapperStyle = { minHeight: "100vh", width: "100vw", background: "linear-gradient(to right, #d7f0f7, #c2e9f5)", display: "flex", margin: "0", padding: "0" };

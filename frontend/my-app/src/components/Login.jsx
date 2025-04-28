@@ -17,17 +17,28 @@ const Login = ({ switchToSignUp }) => {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
+
       if (!response.ok) {
         alert(`Error: ${data.message}`);
         return;
       }
+
+      // ✅ Save user info cleanly
       localStorage.setItem("userEmail", data.userId);
       localStorage.setItem("userRole", data.role);
-      if (data.role === "admin") navigate("/admin-dashboard");
-      else navigate("/dashboard");
+
+      // ✅ Redirect based on role
+      if (data.role === "admin") {
+        navigate("/admin-dashboard");
+      } else if (data.role === "user") {
+        navigate("/dashboard");
+      } else {
+        console.warn("Unknown role detected:", data.role);
+        alert("Unknown role. Please contact support.");
+      }
     } catch (err) {
       console.error("Login failed:", err);
-      alert("An error occurred during login.");
+      alert("An error occurred during login. Please try again.");
     }
   };
 
