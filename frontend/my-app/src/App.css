@@ -454,9 +454,8 @@ a:hover {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;          /* 👈 change flex to grid */
+  place-items: center;    /* 👈 perfectly center */
   z-index: 1000;
 }
 
@@ -480,18 +479,23 @@ a:hover {
 /* Close button */
 .close-btn {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: 1rem;
+  right: 1rem;
   background: transparent;
   border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
+  font-size: 2rem; /* a bit bigger for better UX */
+  font-weight: bold;
   color: var(--text-muted);
-  transition: var(--transition);
+  cursor: pointer;
+  transition: color 0.3s ease;
+  z-index: 1001; /* ensures it's above everything */
 }
+
 .close-btn:hover {
   color: var(--text-dark);
 }
+
+
 
 /* column headers */
 .cards-grid-header {
@@ -635,4 +639,127 @@ a:hover {
   }
 }
 
+<<<<<<< HEAD
+/* AI Insights Modal New Styles */
+
+/* Insights Modal Improvements */
+.insights-modal {
+  position: relative;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 18px;
+  width: 90%;
+  max-width: 560px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Close button */
+.insights-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.8rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.insights-close-btn:hover {
+  color: var(--text-dark);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Modal title */
+.insights-title {
+  text-align: center;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* Ticket title (inside modal) */
+.ticket-title {
+  color: var(--text-dark);
+}
+
+/* Scrollable card inside modal */
+.insights-card {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Text inside card */
+.insights-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Loading text when AI suggestions are loading */
+.loading-text {
+  text-align: center;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Actions Dropdown inside View Users Table */
+.dropdown-action {
+  position: relative;
+  display: inline-block;
+}
+
+.action-btn {
+  background-color: #4f46e5; /* same as stat card highlight */
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.action-btn:hover {
+  background-color: #4338ca;
+}
+
+/* Remove hover based show, now manual */
+.dropdown-content {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+
+.dropdown-content button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #1e293b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-content button:hover {
+  background-color: #f1f5f9; /* light hover */
+  color: #2563eb;
+}
+
+.dropdown-action:hover .dropdown-content {
+  display: block;
+}
+
+=======
+>>>>>>> upstream/main
 

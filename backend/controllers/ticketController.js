@@ -5,6 +5,8 @@ const dynamoDB = require("../config/dynamo");
 const TABLE_NAME = "TicketSystem-Tickets";
 
 // Create Ticket (unchanged)
+// backend/controllers/ticketController.js
+
 exports.createTicket = async (req, res) => {
   const {
     title,
@@ -12,6 +14,7 @@ exports.createTicket = async (req, res) => {
     userEmail,
     status = "open",
     priority = "medium",
+    department = "",  // 🆕 added department
     tags = [],
   } = req.body;
 
@@ -27,6 +30,7 @@ exports.createTicket = async (req, res) => {
       userEmail,
       status,
       priority,
+      department,   // 🆕 added department
       tags,
       createdAt: now,
       updatedAt: now,
@@ -42,6 +46,7 @@ exports.createTicket = async (req, res) => {
       .json({ message: "Could not create ticket", error: err.message });
   }
 };
+
 
 // View All Tickets for a User (unchanged)
 exports.getTicketsByUser = async (req, res) => {

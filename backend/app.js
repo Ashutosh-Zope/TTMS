@@ -1,7 +1,9 @@
+// backend/app.js
 const express = require("express");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
+const aiRoutes = require('./routes/aiRoutes'); // <-- AI Routes
 
 const app = express();
 
@@ -25,5 +27,9 @@ app.get('/test', (req, res) => {
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/tickets", ticketRoutes);
+
+// 🧠 Connect AI Routes properly
+app.use('/api', aiRoutes);
+console.log("✅ aiRoutes connected to /api"); // <-- NEW: Debug print
 
 module.exports = app;

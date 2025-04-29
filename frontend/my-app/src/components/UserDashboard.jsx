@@ -1,13 +1,17 @@
 // src/components/UserDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ChatModal from "./ChatModal";
+import InsightsModal from "./InsightsModal"; // 🆕 New component
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001/api";
+const API_BASE = "http://localhost:5001/api";
 
 const UserDashboard = () => {
   const [tickets, setTickets] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [modalTicket, setModalTicket] = useState(null);
+  const [showChat, setShowChat] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
   const navigate = useNavigate();
   const email = localStorage.getItem("userEmail");
   const [name, setName] = useState("");
@@ -17,7 +21,6 @@ const UserDashboard = () => {
       navigate("/");
       return;
     }
-    // Load only this user's tickets
     fetch(`${API_BASE}/tickets/${email}`)
       .then((res) => res.json())
       .then(setTickets)
@@ -40,6 +43,11 @@ const UserDashboard = () => {
     navigate("/");
   };
 
+  const handleInsightsClick = (ticket) => {
+    setSelectedTicket(ticket);
+    setShowInsights(true);
+  };
+
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
@@ -54,12 +62,7 @@ const UserDashboard = () => {
           </button>
           {menuOpen && (
             <ul className="dropdown-menu">
-              <li
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate("/dashboard");
-                }}
-              >
+              <li onClick={() => { setMenuOpen(false); navigate("/dashboard"); }}>
                 Dashboard ▶
               </li>
               <li onClick={handleLogout}>Log Out ↗</li>
@@ -94,7 +97,7 @@ const UserDashboard = () => {
                   <th>Description</th>
                   <th>Priority</th>
                   <th>Status</th>
-                  <th>Action</th>
+                  <th>Action</th> {/* ✅ Edit + Insights */}
                 </tr>
               </thead>
               <tbody>
@@ -107,14 +110,44 @@ const UserDashboard = () => {
                       <td>{t.priority}</td>
                       <td>{t.status}</td>
                       <td>
-                        <button
-                          className="edit-btn"
-                          onClick={() =>
-                            navigate(`/edit-ticket/${t.ticketId}`, { state: t })
-                          }
-                        >
-                          Edit
-                        </button>
+                        <div style={{ display: "flex", gap: "0.5rem" }}>
+                          <button
+                            onClick={() => navigate(`/edit-ticket/${t.ticketId}`, { state: t })}
+                            style={{
+                              backgroundColor: "#fbbf24",
+                              border: "none",
+                              padding: "0.5rem 1rem",
+                              borderRadius: "16px",
+                              fontWeight: "600",
+                              cursor: "pointer",
+                              color: "#1f2937",
+                              transition: "all 0.3s ease-in-out",
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = "#facc15"}
+                            onMouseOut={(e) => e.target.style.backgroundColor = "#fbbf24"}
+                          >
+                            Edit
+                          </button>
+
+                          {/* 🆕 AI Insights Button */}
+                          <button
+                            onClick={() => handleInsightsClick(t)}
+                            style={{
+                              backgroundColor: "#7f5af0",
+                              border: "none",
+                              padding: "0.5rem 1.5rem",
+                              borderRadius: "16px",
+                              fontWeight: "600",
+                              cursor: "pointer",
+                              color: "#fff",
+                              transition: "all 0.3s ease-in-out",
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = "#6246ea"}
+                            onMouseOut={(e) => e.target.style.backgroundColor = "#7f5af0"}
+                          >
+                            AI Insights
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -131,42 +164,36 @@ const UserDashboard = () => {
         </div>
       </div>
 
-      {/* Detail Modal */}
-      {modalTicket && (
-        <div className="modal-overlay" onClick={() => setModalTicket(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="close-btn"
-              onClick={() => setModalTicket(null)}
-            >
-              ×
-            </button>
-            <h2>Ticket Details</h2>
-            <p><strong>ID:</strong> {modalTicket.ticketId}</p>
-            <p><strong>Subject:</strong> {modalTicket.title}</p>
-            <p><strong>Description:</strong> {modalTicket.description}</p>
-            <p>
-              <strong>Priority:</strong>{" "}
-              <span className={`priority-badge ${modalTicket.priority}`}>
-                {modalTicket.priority}
-              </span>
-            </p>
-            <p><strong>Status:</strong> {modalTicket.status}</p>
-            <div style={{ marginTop: "1rem" }}>
-              <button
-                className="edit-btn"
-                onClick={() => {
-                  setModalTicket(null);
-                  navigate(`/edit-ticket/${modalTicket.ticketId}`, {
-                    state: modalTicket,
-                  });
-                }}
-              >
-                Edit Ticket
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Floating Ask AI Button */}
+      <button
+        onClick={() => setShowChat(true)}
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          backgroundColor: "#7f5af0",
+          color: "#fff",
+          border: "none",
+          borderRadius: "50%",
+          width: "60px",
+          height: "60px",
+          fontSize: "1.5rem",
+          cursor: "pointer",
+          boxShadow: "0 8px 20px rgba(127, 90, 240, 0.3)",
+          zIndex: 999,
+        }}
+      >
+        💬
+      </button>
+
+      {/* Chat Modal */}
+      {showChat && (
+        <ChatModal onClose={() => setShowChat(false)} />
+      )}
+
+      {/* 🆕 Insights Modal */}
+      {showInsights && selectedTicket && (
+        <InsightsModal ticket={selectedTicket} onClose={() => setShowInsights(false)} />
       )}
     </div>
   );
