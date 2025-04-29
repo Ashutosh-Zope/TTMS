@@ -50,7 +50,9 @@ export default function AdminDashboard() {
     { name: "Low", value: tickets.filter(t => t.priority === "low").length },
   ];
 
+
   const COLORS = ["#0e7490", "#22c55e", "#f43f5e"];
+
 
   const handleCardClick = (type) => {
     if (type === "all") navigate("/all-tickets");
@@ -64,6 +66,7 @@ export default function AdminDashboard() {
     localStorage.removeItem("userRole");
     navigate("/");
   };
+
 
   return (
     <div className="dashboard-container">
@@ -85,6 +88,7 @@ export default function AdminDashboard() {
           <ChartCard title="Ticket Status" data={statusData} colors={COLORS} />
           <ChartCard title="Ticket Priority" data={priorityData} colors={COLORS} />
         </div>
+
       </div>
     </div>
   );

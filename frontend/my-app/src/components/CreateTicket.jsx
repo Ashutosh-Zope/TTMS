@@ -9,7 +9,7 @@ export default function CreateTicket() {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
   const [status, setStatus] = useState("open");
-  const [attachments, setAttachments] = useState([]);  // FileList → array
+  const [attachments, setAttachments] = useState([]); 
 
   const navigate = useNavigate();
 
@@ -18,36 +18,33 @@ export default function CreateTicket() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const ticketData = {
-      title,
-      description,
-      priority,
-      status,
-      userEmail: localStorage.getItem("userEmail"),   // attach user email
-      createdAt: new Date().toISOString()
-    };
+    e.preventDefault();
+    try {
+      const ticketData = {
+        title,
+        description,
+        priority,
+        status,
+        userEmail: localStorage.getItem("userEmail"),
+        createdAt: new Date().toISOString(),
+      };
 
-    const res = await fetch(`${API_BASE}/tickets`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(ticketData)
-    });
+      const res = await fetch(`${API_BASE}/tickets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ticketData),
+      });
 
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message || "Could not create ticket");
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Could not create ticket");
+      }
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert(`Error: ${err.message}`);
     }
-    navigate("/dashboard");
-  } catch (err) {
-    console.error(err);
-    alert(`Error: ${err.message}`);
-  }
-};
-
+  };
 
   return (
     <div className="form-container">
@@ -62,6 +59,7 @@ export default function CreateTicket() {
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
+
         <div className="form-group">
           <label>Ticket Description</label>
           <textarea
@@ -70,6 +68,7 @@ export default function CreateTicket() {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
+
         <div className="form-group">
           <label>Priority</label>
           <select
@@ -81,6 +80,7 @@ export default function CreateTicket() {
             <option value="high">High</option>
           </select>
         </div>
+
         <div className="form-group">
           <label>Status</label>
           <select
@@ -92,6 +92,7 @@ export default function CreateTicket() {
             <option value="closed">Closed</option>
           </select>
         </div>
+
         <div className="form-group">
           <label>Attachments</label>
           <input
@@ -101,6 +102,7 @@ export default function CreateTicket() {
             onChange={handleFiles}
           />
         </div>
+
         <button type="submit">Submit Ticket</button>
         <button type="button" onClick={() => navigate(-1)} className="cancel">
           Cancel
