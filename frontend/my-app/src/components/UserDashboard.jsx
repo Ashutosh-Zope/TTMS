@@ -14,6 +14,7 @@ const UserDashboard = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const navigate = useNavigate();
   const email = localStorage.getItem("userEmail");
+  const [name, setName] = useState("");
 
   useEffect(() => {
     if (!email) {
@@ -25,6 +26,17 @@ const UserDashboard = () => {
       .then(setTickets)
       .catch(console.error);
   }, [email, navigate]);
+
+  useEffect(() => {
+    if (!email) return;
+    fetch(`${API_BASE}/users/users`)
+      .then((res) => res.json())
+      .then((allUsers) => {
+        const me = allUsers.find((u) => u.email === email);
+        if (me) setName(me.name);
+      })
+      .catch(console.error);
+  }, [email]);
 
   const handleLogout = () => {
     localStorage.removeItem("userEmail");
@@ -64,7 +76,7 @@ const UserDashboard = () => {
       {/* Main */}
       <div className="main">
         <div className="header-card">
-          <h1>Welcome, {email.split("@")[0]}</h1>
+          <h1>Welcome, {name}</h1>
         </div>
 
         <div className="content-card">

@@ -1,24 +1,60 @@
+// src/components/ViewUsers.jsx
 import React, { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+=======
+import { useNavigate }                   from "react-router-dom";
+>>>>>>> upstream/main
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001/api";
 
 export default function ViewUsers() {
+<<<<<<< HEAD
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
   const navigate = useNavigate();
   const email = localStorage.getItem("userEmail");
 
+=======
+  const [users, setUsers]           = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [menuOpen, setMenuOpen]   = useState(false);
+  const navigate                  = useNavigate();
+  const email                     = localStorage.getItem("userEmail");
+
+  // Fetch users + departments
+>>>>>>> upstream/main
   useEffect(() => {
     if (!email) {
       navigate("/");
       return;
     }
+<<<<<<< HEAD
     fetchUsers();
+=======
+
+    // 1. Users
+    fetch(`${API_BASE}/users/users`)
+      .then((r) => r.json())
+      .then((data) => {
+        console.log("👥 Fetched Users:", data);
+        setUsers(data);
+      })
+      .catch(console.error);
+
+    // 2. Departments
+    fetch(`${API_BASE}/users/departments`)
+      .then((r) => r.json())
+      .then((data) => {
+        console.log("🏷️ Fetched Departments:", data);
+        setDepartments(data);
+      })
+      .catch(console.error);
+>>>>>>> upstream/main
   }, [email, navigate]);
 
   const fetchUsers = async () => {
@@ -86,12 +122,80 @@ export default function ViewUsers() {
     }
   };
 
+  const updateDepartments = async (userEmail, newDeptIds) => {
+    try {
+      const res = await fetch(
+        `${API_BASE}/users/departments/${userEmail}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ departmentIds: newDeptIds }),
+        }
+      );
+      if (!res.ok) throw new Error("Failed updating departments");
+      // Reflect change locally
+      setUsers((u) =>
+        u.map((x) =>
+          x.email === userEmail ? { ...x, departmentIds: newDeptIds } : x
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
+
   return (
+<<<<<<< HEAD
     <div style={pageWrapperStyle}>
       {/* Sidebar with logout! */}
       <div style={sidebarWrapperStyle}>
         <Sidebar onLogout={handleLogout} isAdmin={true} />
       </div>
+=======
+    <div className="dashboard-container">
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div className="menu-container">
+          <button
+            className="hamburger"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+          {menuOpen && (
+            <ul className="dropdown-menu">
+              <li
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/admin-dashboard");
+                }}
+              >
+                Dashboard ▶
+              </li>
+              <li
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/all-tickets");
+                }}
+              >
+                View All Tickets ▶
+              </li>
+              <li
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/view-users");
+                }}
+              >
+                View Users ▶
+              </li>
+              <li onClick={handleLogout}>Log Out ↗</li>
+            </ul>
+          )}
+        </div>
+      </aside>
+>>>>>>> upstream/main
 
       {/* Main content */}
       <div style={contentWrapperStyle}>
@@ -102,6 +206,7 @@ export default function ViewUsers() {
             <table style={tableStyle}>
               <thead style={theadStyle}>
                 <tr>
+<<<<<<< HEAD
                   <th style={thStyle}>Name</th>
                   <th style={thStyle}>Phone</th>
                   <th style={thStyle}>Created</th>
@@ -133,6 +238,61 @@ export default function ViewUsers() {
                 ) : (
                   <tr>
                     <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
+=======
+                  <th>Email</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Created</th>
+                  <th>Departments</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.email}>
+                    <td>{u.email}</td>
+                    <td>{u.name}</td>
+                    <td>{u.phone}</td>
+                    <td>{new Date(u.createdAt).toLocaleString()}</td>
+                    <td>
+                      <select
+                        value={u.departmentIds?.[0] || ""}
+                        onChange={e => updateDepartments(u.email, [e.target.value])}
+                        style={{
+                          minWidth: "150px",
+                          padding: "0.5rem",
+                          borderRadius: "8px",
+                          border: "1px solid var(--border-light)",
+                          backgroundColor: "var(--input-bg)"
+                        }}
+                      >
+                        <option value="" disabled>
+                          Select department…
+                        </option>
+                        {departments.map((d) => (
+                          <option
+                            key={d.departmentId}
+                            value={d.departmentId}
+                          >
+                            {d.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <button
+                        className="edit-btn"
+                        onClick={() => promote(u.email)}
+                      >
+                        Promote to Admin
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {users.length === 0 && (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign: "center" }}>
+>>>>>>> upstream/main
                       No users found.
                     </td>
                   </tr>
@@ -165,6 +325,7 @@ export default function ViewUsers() {
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
+<<<<<<< HEAD
 }
 
 // Same styles as before (no change)
@@ -183,3 +344,6 @@ const tdStyle = { padding: "10px 12px", borderBottom: "1px solid #eee", fontSize
 const promoteButtonStyle = { backgroundColor: "#007bff", color: "white", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer", transition: "background-color 0.3s" };
 const paginationWrapperStyle = { marginTop: "30px", display: "flex", justifyContent: "center", alignItems: "center", flexWrap: "wrap", gap: "10px", flexDirection: "row" };
 const pageButtonStyle = { width: "40px", height: "40px", borderRadius: "16px", border: "2px solid #3b4cca", backgroundColor: "white", color: "#3b4cca", fontWeight: "bold", fontSize: "16px", display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer", transition: "0.3s all ease" };
+=======
+}
+>>>>>>> upstream/main

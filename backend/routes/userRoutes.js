@@ -1,24 +1,33 @@
+
 // backend/routes/userRoutes.js
 const express = require("express");
 const {
   registerUser,
   loginUser,
   forgotPassword,
+  resetPassword,
   getAllUsers,
   promoteUser,
-  deleteUser
+  getAllDepartments,
+  updateUserDepartments
 } = require("../controllers/userController");
 
 const router = express.Router();
 
-// public
-router.post("/signup",       registerUser);
-router.post("/login",        loginUser);
-router.post("/forgot-password", forgotPassword);
+// Public auth routes
+router.post("/signup", registerUser);
+router.post("/login", loginUser);
 
-// admin APIs
+// Password reset workflow
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
+
+// Departments listing & assignment
+router.get("/departments", getAllDepartments);
+router.patch("/departments/:email", updateUserDepartments);
+
+// Admin user management
 router.get("/users", getAllUsers);
 router.post("/promote/:email", promoteUser);
-router.delete("/:email", deleteUser);
 
 module.exports = router;
