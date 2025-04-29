@@ -1,4 +1,3 @@
-// frontend/src/components/CreateTicket.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -9,7 +8,7 @@ export default function CreateTicket() {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
   const [status, setStatus] = useState("open");
-  const [attachments, setAttachments] = useState([]); 
+  const [attachments, setAttachments] = useState([]); // ✅ Keep this
 
   const navigate = useNavigate();
 
@@ -27,6 +26,7 @@ export default function CreateTicket() {
         status,
         userEmail: localStorage.getItem("userEmail"),
         createdAt: new Date().toISOString(),
+        // attachments, // Optional: if you are actually sending attachments
       };
 
       const res = await fetch(`${API_BASE}/tickets`, {
@@ -49,7 +49,7 @@ export default function CreateTicket() {
   return (
     <div className="form-container">
       <h2>Create Ticket</h2>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Ticket Subject</label>
           <input

@@ -7,6 +7,7 @@ import AuthPage from "./components/AuthPage";
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword"; 
 
 // User
 import UserDashboard from "./components/UserDashboard";
@@ -31,6 +32,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* User flows */}
         <Route path="/dashboard" element={<UserDashboard />} />

@@ -4,6 +4,7 @@ import axios from "axios";
 import Sidebar from "./Sidebar";
 import StatCard from "./StatCard";
 import ChartCard from "./ChartCard";
+import ChartCardArea from "./ChartCardArea";
 import "./admin.css"; 
 
 export default function AdminDashboard() {
@@ -28,10 +29,10 @@ export default function AdminDashboard() {
     const interval = setInterval(fetchData, 15000);
     return () => clearInterval(interval);
   }, []);
+
   useEffect(() => {
     document.body.style.background = "linear-gradient(to bottom right, #7ee8fa, #eec0c6)";
   }, []);
-  
 
   const allTickets = tickets.length;
   const activeTickets = tickets.filter(t => t.status === "open" || t.status === "in progress").length;
@@ -50,9 +51,66 @@ export default function AdminDashboard() {
     { name: "Low", value: tickets.filter(t => t.priority === "low").length },
   ];
 
+  
+  // New Users Per Day
+  const usersByDate = {};
+  users.forEach((user) => {
+    const date = new Date(user.createdAt).toLocaleDateString();
+    if (!usersByDate[date]) {
+      usersByDate[date] = 0;
+    }
+    usersByDate[date]++;
+  });
+
+  const newUserData = Object.keys(usersByDate)
+    .map(date => ({
+      date,
+      count: usersByDate[date],
+    }))
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  // New Open vs Closed Tickets Per Day
+const openClosedByDate = {};
+
+tickets.forEach((ticket) => {
+  const date = new Date(ticket.createdAt).toLocaleDateString();
+  if (!openClosedByDate[date]) {
+    openClosedByDate[date] = { open: 0, closed: 0 };
+  }
+  if (ticket.status === "closed") {
+    openClosedByDate[date].closed++;
+  } else {
+    openClosedByDate[date].open++;
+  }
+});
+
+const openClosedData = Object.keys(openClosedByDate)
+  .map(date => ({
+    date,
+    Open: openClosedByDate[date].open,
+    Closed: openClosedByDate[date].closed,
+  }))
+  .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+
+  // Tickets Created Per Day
+  const ticketsByDate = {};
+  tickets.forEach((ticket) => {
+    const date = new Date(ticket.createdAt).toLocaleDateString();
+    if (!ticketsByDate[date]) {
+      ticketsByDate[date] = 0;
+    }
+    ticketsByDate[date]++;
+  });
+
+  const newTicketData = Object.keys(ticketsByDate)
+    .map(date => ({
+      date,
+      count: ticketsByDate[date],
+    }))
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const COLORS = ["#0e7490", "#22c55e", "#f43f5e"];
-
 
   const handleCardClick = (type) => {
     if (type === "all") navigate("/all-tickets");
@@ -66,7 +124,6 @@ export default function AdminDashboard() {
     localStorage.removeItem("userRole");
     navigate("/");
   };
-
 
   return (
     <div className="dashboard-container">
@@ -87,10 +144,12 @@ export default function AdminDashboard() {
         <div className="charts-grid">
           <ChartCard title="Ticket Status" data={statusData} colors={COLORS} />
           <ChartCard title="Ticket Priority" data={priorityData} colors={COLORS} />
+          <ChartCard title="New Users Per Day" data={newUserData} type="bar" />
+          <ChartCard title="Tickets Created Per Day" data={newTicketData} type="bar" />
+          <ChartCardArea title="Open vs Closed Tickets Over Time" data={openClosedData} />
         </div>
 
       </div>
     </div>
   );
-  
 }

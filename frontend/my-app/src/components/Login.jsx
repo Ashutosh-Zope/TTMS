@@ -16,6 +16,7 @@ const Login = ({ switchToSignUp }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -26,7 +27,6 @@ const Login = ({ switchToSignUp }) => {
       // ✅ Save user info cleanly
       localStorage.setItem("userEmail", data.userId);
       localStorage.setItem("userRole", data.role);
-<<<<<<< HEAD
 
       // ✅ Redirect based on role
       if (data.role === "admin") {
@@ -37,11 +37,6 @@ const Login = ({ switchToSignUp }) => {
         console.warn("Unknown role detected:", data.role);
         alert("Unknown role. Please contact support.");
       }
-=======
-      localStorage.setItem("userName", data.name);
-      if (data.role === "admin") navigate("/admin-dashboard");
-      else                navigate("/dashboard");
->>>>>>> upstream/main
     } catch (err) {
       console.error("Login failed:", err);
       alert("An error occurred during login. Please try again.");
@@ -76,6 +71,12 @@ const Login = ({ switchToSignUp }) => {
           Sign Up
         </span>
       </p>
+<p style={styles.switchText}>
+        <span style={styles.switchLink} onClick={() => navigate("/forgot-password")} className="footer-link">
+        Forgot Password?
+        </span>
+      </p>
+
     </form>
   );
 };

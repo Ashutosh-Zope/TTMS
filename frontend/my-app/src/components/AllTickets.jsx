@@ -53,10 +53,11 @@ export default function AllTickets() {
       );
     }
     if (searchTerm) {
-      sortableTickets = sortableTickets.filter((ticket) =>
-        ticket.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  sortableTickets = sortableTickets.filter((ticket) =>
+    ticket.title?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+}
+
 
     if (sortConfig.key) {
       sortableTickets.sort((a, b) => {
@@ -80,8 +81,30 @@ export default function AllTickets() {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleUpdate = (ticket) => {
-    navigate(`/edit-ticket/${ticket.ticketId}`, { state: ticket });
-  };
+  const role = localStorage.getItem("userRole");
+  const path = `/edit-ticket/${ticket.ticketId}`;
+  navigate(path, { state: ticket });
+};
+
+  const handleDelete = async (ticketId) => {
+  if (!window.confirm("Are you sure you want to delete this ticket?")) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/tickets/${ticketId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Delete failed");
+
+    // Remove deleted ticket from state
+    setFilteredTickets(prev => prev.filter(ticket => ticket.ticketId !== ticketId));
+    alert("Ticket deleted successfully");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to delete ticket");
+  }
+};
+
+
 
   const renderSortArrow = (key) => {
     if (sortConfig.key !== key) return null;
@@ -94,12 +117,14 @@ export default function AllTickets() {
   localStorage.removeItem("userRole");
   navigate("/");
   };
+  
+  const [openDropdownId, setOpenDropdownId] = useState(null);
 
   return (
     <div style={styles.pageWrapper}>
       {/* Sidebar */}
       <div style={styles.sidebar}>
-        <Sidebar onLogout={handleLogout} isAdmin={true} />
+        <Sidebar onLogout={handleLogout} isAdmin={localStorage.getItem("userRole") === "admin"} />
 
       </div>
 
@@ -124,12 +149,13 @@ export default function AllTickets() {
           </select>
 
           <input
-            type="text"
-            placeholder="Search by description..."
-            value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            style={styles.searchInput}
-          />
+  type="text"
+  placeholder="Search by title..."
+  value={searchTerm}
+  onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+  style={styles.searchInput}
+/>
+
         </section>
 
         {/* Table */}
@@ -138,11 +164,9 @@ export default function AllTickets() {
             <thead>
               <tr>
                 <th style={styles.tableHeader} onClick={() => handleSort('ticketId')}>Ticket ID{renderSortArrow('ticketId')}</th>
-                <th style={styles.tableHeader} onClick={() => handleSort('description')}>Description{renderSortArrow('description')}</th>
+                <th style={styles.tableHeader} onClick={() => handleSort('title')}>Title{renderSortArrow('title')}</th>
                 <th style={styles.tableHeader} onClick={() => handleSort('priority')}>Priority{renderSortArrow('priority')}</th>
                 <th style={styles.tableHeader} onClick={() => handleSort('status')}>Status{renderSortArrow('status')}</th>
-                <th style={styles.tableHeader} onClick={() => handleSort('department')}>Department{renderSortArrow('department')}</th>
-                <th style={styles.tableHeader} onClick={() => handleSort('assignedTo')}>Assigned{renderSortArrow('assignedTo')}</th>
                 <th style={styles.tableHeader} onClick={() => handleSort('createdAt')}>Created At{renderSortArrow('createdAt')}</th>
                 <th style={styles.tableHeader}>Actions</th>
               </tr>
@@ -155,19 +179,43 @@ export default function AllTickets() {
                       {ticket.ticketId}
                     </span>
                   </td>
-                  <td style={styles.cell}>{ticket.description || "N/A"}</td>
+                  <td style={styles.cell}>{ticket.title || "N/A"}</td>
                   <td style={styles.cell}>
                     <span style={{ ...styles.priorityBadge, ...priorityBadgeStyle(ticket.priority) }}>
                       {ticket.priority || "N/A"}
                     </span>
                   </td>
                   <td style={styles.cell}>{ticket.status || "N/A"}</td>
-                  <td style={styles.cell}>{ticket.department || "N/A"}</td>
-                  <td style={styles.cell}>{ticket.assignedTo || "N/A"}</td>
                   <td style={styles.cell}>{ticket.createdAt?.slice(0, 10) || "N/A"}</td>
                   <td style={styles.cell}>
-                    <button style={styles.updateButton} onClick={() => handleUpdate(ticket)}>Edit</button>
-                  </td>
+  <div style={{ position: "relative", display: "inline-block" }}>
+    <button
+      style={styles.actionButton}
+      onClick={() =>
+        setOpenDropdownId(openDropdownId === ticket.ticketId ? null : ticket.ticketId)
+      }
+    >
+      ⋮
+    </button>
+
+    {openDropdownId === ticket.ticketId && (
+      <div style={styles.dropdownMenu}>
+        <button
+          style={styles.dropdownItem}
+          onClick={() => handleUpdate(ticket)}
+        >
+          Edit
+        </button>
+        <button
+          style={{ ...styles.dropdownItem, color: "red" }}
+          onClick={() => handleDelete(ticket.ticketId)}
+        >
+          Delete
+        </button>
+      </div>
+    )}
+  </div>
+</td>
                 </tr>
               ))}
             </tbody>
@@ -196,11 +244,9 @@ export default function AllTickets() {
             <div style={styles.modalContent}>
               <h2>Ticket Details</h2>
               <p><b>ID:</b> {modalTicket.ticketId}</p>
-              <p><b>Description:</b> {modalTicket.description}</p>
+              <p><b>Title:</b> {modalTicket.title}</p>
               <p><b>Priority:</b> {modalTicket.priority}</p>
               <p><b>Status:</b> {modalTicket.status}</p>
-              <p><b>Department:</b> {modalTicket.department}</p>
-              <p><b>Assigned To:</b> {modalTicket.assignedTo}</p>
               <p><b>Created At:</b> {modalTicket.createdAt?.slice(0, 10)}</p>
               <button style={styles.closeButton} onClick={() => setModalTicket(null)}>Close</button>
             </div>
@@ -300,27 +346,27 @@ const styles = {
     cursor: "pointer",
   },
   pagination: {
-    marginTop: "2rem",
-    display: "flex",
-    flexDirection: "row",   // ⭐ FORCE horizontal row layout
-    gap: "0.6rem",
-    justifyContent: "center",
-    alignItems: "center",
-    flexWrap: "wrap",
-  },
+  marginTop: "2rem",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: "0.4rem",
+  flexWrap: "nowrap",
+},
   pageButton: {
-    padding: "0.4rem 0.8rem",
-    minWidth: "2.2rem",
-    height: "2.2rem",
-    borderRadius: "9999px",
-    border: "1px solid #3b82f6",
-    backgroundColor: "white",
-    color: "#3b82f6",
-    fontWeight: "600",
-    cursor: "pointer",
-    fontSize: "0.9rem",
-    transition: "all 0.2s ease-in-out",
-  },
+  padding: "4px 10px",
+  minWidth: "auto",
+  height: "30px",
+  borderRadius: "6px",
+  border: "1px solid #3b82f6",
+  backgroundColor: "white",
+  color: "#3b82f6",
+  fontWeight: "500",
+  fontSize: "14px",
+  cursor: "pointer",
+  transition: "all 0.2s ease-in-out",
+},
   activePage: {
     backgroundColor: "#3b82f6",
     color: "white",
@@ -358,6 +404,39 @@ const styles = {
     fontSize: "0.8rem",
     fontWeight: "500",
   },
+  
+  actionButton: {
+  backgroundColor: "#3b82f6",
+  color: "white",
+  border: "none",
+  padding: "5px 10px",
+  borderRadius: "4px",
+  cursor: "pointer",
+  fontSize: "16px",
+},
+
+dropdownMenu: {
+  position: "absolute",
+  top: "100%",
+  right: 0,
+  backgroundColor: "#fff",
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+  borderRadius: "6px",
+  zIndex: 100,
+  display: "flex",
+  flexDirection: "column",
+},
+
+dropdownItem: {
+  padding: "8px 12px",
+  backgroundColor: "white",
+  border: "none",
+  textAlign: "left",
+  cursor: "pointer",
+  fontSize: "14px",
+  minWidth: "100px",
+},
+
 };
 
 const priorityBadgeStyle = (priority) => ({

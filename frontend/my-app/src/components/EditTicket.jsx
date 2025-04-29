@@ -74,7 +74,7 @@ const EditTicket = () => {
   return (
     <div style={{ display: "flex" }}>
       {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} isAdmin={true} />
+      <Sidebar onLogout={handleLogout} isAdmin={localStorage.getItem("userRole") === "admin"} />
 
       {/* Main content */}
       <div style={{ marginLeft: "80px", padding: "2rem", width: "100%" }}>

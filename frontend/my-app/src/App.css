@@ -184,10 +184,14 @@ a:hover {
 }
 
 .form-footer {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-muted);
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
 }
 
 /*––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––*/
@@ -639,7 +643,6 @@ a:hover {
   }
 }
 
-<<<<<<< HEAD
 /* AI Insights Modal New Styles */
 
 /* Insights Modal Improvements */
@@ -760,6 +763,6 @@ a:hover {
   display: block;
 }
 
-=======
->>>>>>> upstream/main
+
+
 

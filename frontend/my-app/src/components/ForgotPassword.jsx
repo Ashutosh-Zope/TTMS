@@ -1,8 +1,11 @@
+//forgot-password
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001/api";
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
 
   const handleForgotPassword = async (e) => {
@@ -16,6 +19,7 @@ const ForgotPassword = () => {
       const data = await response.json();
       if (response.ok) {
         alert(data.message);
+        navigate("/reset-password");
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -30,22 +34,41 @@ const ForgotPassword = () => {
       <h2>Forgot Password</h2>
       <form onSubmit={handleForgotPassword}>
         <div className="form-group">
-          <label>Email</label>
           <input
             type="email"
-            placeholder="Enter Email"
+            placeholder="Enter your email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
           />
         </div>
-        <button type="submit">Reset Password</button>
+        <button type="submit">Send Reset Code</button>
       </form>
       <div className="form-footer">
-        <a href="/">Back to Login</a>
-      </div>
-    </div>
+         <a href="/">Back to Login</a>
+       </div>
+     </div>
+
+  //  <div className="form-container">
+  //     <h2>Forgot Password</h2>
+  //     <form onSubmit={handleForgotPassword}>
+  //       <div className="form-group">
+  //         <label>Email</label>
+  //         <input
+  //           type="email"
+  //           placeholder="Enter Email"
+  //           required
+  //           value={email}
+  //           onChange={(e) => setEmail(e.target.value)}
+  //         />
+  //       </div>
+  //       <button type="submit">Reset Password</button>
+  //     </form>
+  //     <div className="form-footer">
+  //       <a href="/">Back to Login</a>
+  //     </div>
+  //   </div>
   );
 };
 
-export default ForgotPassword;
+export default ForgotPassword;

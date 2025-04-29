@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.798.0",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.9.0",
     "cors": "^2.8.5",

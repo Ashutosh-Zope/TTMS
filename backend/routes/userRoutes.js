@@ -9,7 +9,8 @@ const {
   getAllUsers,
   promoteUser,
   getAllDepartments,
-  updateUserDepartments
+  updateUserDepartments,
+  deleteUser,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -29,5 +30,7 @@ router.patch("/departments/:email", updateUserDepartments);
 // Admin user management
 router.get("/users", getAllUsers);
 router.post("/promote/:email", promoteUser);
+router.delete("/:email", deleteUser);
+
 
 module.exports = router;
